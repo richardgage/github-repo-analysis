@@ -1,0 +1,44 @@
+title: Seng 404 Project Timeline - Summer 2025
+description: Group 3's Timeline
+
+// Team member color coding
+#richard: #3498db
+#jack: #e74c3c
+#santiago: #f39c12
+#evan: #2ecc71
+#team: #9b59b6
+
+// Task category colors
+#literature: #8e44ad
+#data: #27ae60
+#analysis: #e67e22
+#writing: #34495e
+#deliverable: #fe0b06
+
+group Project Proposal {
+
+  07/14/2025-07/16/2025: Data Collection #santiago
+  07/14/2025-07/16/2025: Dataset Experimentation #santiago
+  07/15/2025-07/16/2025: Timeline Construction #richard
+  07/14/2025-07/16/2025: Final Proposal Preparation #team
+  
+  
+  2025-07-16: PROJECT PROPOSAL DUE #deliverable
+}
+
+
+Group Interim Report {
+
+2025-08-01: INTERIM REPORT DUE #deliverable
+}
+
+Group Project Presentation{
+
+2025-08-20: Presentation Due #deliverable
+}
+
+Group Final Report{
+
+2025-08-23: Final Report Due #deliverable
+}
+

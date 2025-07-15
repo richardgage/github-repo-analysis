@@ -2,43 +2,71 @@ title: Seng 404 Project Timeline - Summer 2025
 description: Group 3's Timeline
 
 // Team member color coding
+
 #richard: #3498db
-#jack: #e74c3c
 #santiago: #f39c12
 #evan: #2ecc71
+#jack: #fefb00
 #team: #9b59b6
-
-// Task category colors
-#literature: #8e44ad
-#data: #27ae60
-#analysis: #e67e22
-#writing: #34495e
 #deliverable: #fe0b06
+
+
+
 
 group Project Proposal {
 
   07/14/2025-07/16/2025: Data Collection #santiago
   07/14/2025-07/16/2025: Dataset Experimentation #santiago
+  07/14/2025-07/16/2025: Proposal Drafting #jack
   07/15/2025-07/16/2025: Timeline Construction #richard
+  07/15/2025-07/15/2025: Overall WorkFlow Planning #evan
   07/14/2025-07/16/2025: Final Proposal Preparation #team
-  
+  07/14/2025: Team Meeting #team
+  07/15/2025: Team Meeting #team
   
   2025-07-16: PROJECT PROPOSAL DUE #deliverable
 }
+endGroup
 
+group Interim Report {
 
-Group Interim Report {
-
+07/17/2025-07/23/2025: Research Paper Collection #evan
+07/17/2025-07/22/2025: Timeline Editing #richard
+07/23/2025-07/29/2025: Statistical Analysis #santiago #richard
+07/25/2025-07/29/2025: Pilot Study #jack
+07/30/2025-08/01/2025: Interim Report Final Edits #team
+07/18/2025: Team Meeting #team
+07/25/2025: Team Meeting #team
+07/31/2025: Team Meeting #team
 2025-08-01: INTERIM REPORT DUE #deliverable
 }
+endGroup
+group Project Presentation{
 
-Group Project Presentation{
-
+08/10/2025-08/19/2025: The Problem #richard
+08/10/2025-08/19/2025: The Approach #jack
+08/10/2025-08/19/2025: The Results (including ethical) #santiago
+08/10/2025-08/19/2025: The Context #evan
+08/10/2025-08/19/2025: The Reflection #richard
+08/01/2025: Team Meeting #team
+08/08/2025: Team Meeting #team
+08/19/2025: Presentation Rehearsal #team
+08/01/2025-08/19/2025: Overall Powerpoint Editing #team
 2025-08-20: Presentation Due #deliverable
 }
+endGroup
+group Final Report{
 
-Group Final Report{
-
+08/01/2025: Team Meeting #team
+08/02/2025-08/20/2025: Results compared to Paper A #richard
+08/02/2025-08/20/2025: Results compared to Paper B #evan
+08/02/2025-08/20/2025: Results compared to Paper C #jack
+08/02/2025-08/20/2025: Data Analysis #santiago #jack
+08/02/2025-08/20/2025: Figure / Table Creation #evan
+08/02/2025-08/20/2025:Technical Writing Editing: #richard
+08/15/2025: Team Meeting #team
+08/19/2025: Report Final Edits #team
+08/21/2025: Team Meeting #team
 2025-08-23: Final Report Due #deliverable
 }
-
+endGroup

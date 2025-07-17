@@ -75,35 +75,22 @@ This shows that the data is right-skewed and may contain large outliers. After r
 
 
 
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image1.png "image_tooltip")
-
-
-Figure 01. Violin and Box plot of the Number of Open Issues (Maximum of 40 open issues).
+![violin_box_plot](images/violin_box_plot.png)
 
 
 
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
+![barchart](images/barchart.png)
 
 
-![alt_text](images/image2.png "image_tooltip")
 
-
-Figure 02. Bar Chart of the Frequency of the Number of Open Issues.
 
 Finally, a scatter plot was created to compare the number of open issues to the number of contributors for each repository.
 
 
 
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
+![open_vs_contrib](images/open_issues_vs_contributors.png)
 
 
-![alt_text](images/image3.png "image_tooltip")
-
-
-Figure 03. Number of Open Issues vs Number of Contributors
 
 As shown in the previous figure, there does not appear to be a correlation between the two variables; rather, the data points seem to be spread out randomly. However, there is a significant concentration of points in the lower left corner.
 
@@ -163,6 +150,7 @@ This research will provide:
 
 
 ## Project Timeline
+![timeline_legend](images/timeline_legend.png)
 ![timeline](images/timeline.png)
 
 ## References

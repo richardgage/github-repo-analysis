@@ -5,7 +5,6 @@ description: Group 3's Timeline
 
 #richard: #3498db
 #santiago: #f39c12
-#evan: #2ecc71
 #jack: #fefb00
 #team: #9b59b6
 #deliverable: #fe0b06
@@ -19,7 +18,7 @@ group Project Proposal {
   07/14/2025-07/16/2025: Dataset Experimentation #santiago
   07/14/2025-07/16/2025: Proposal Drafting #jack
   07/15/2025-07/16/2025: Timeline Construction #richard
-  07/15/2025-07/15/2025: Overall WorkFlow Planning #evan
+  07/15/2025-07/15/2025: Overall WorkFlow Planning #richard
   07/14/2025-07/16/2025: Final Proposal Preparation #team
   07/14/2025: Team Meeting #team
   07/15/2025: Team Meeting #team
@@ -30,7 +29,7 @@ endGroup
 
 group Interim Report {
 
-07/17/2025-07/23/2025: Research Paper Collection #evan
+07/17/2025-07/23/2025: Research Paper Collection #jack
 07/17/2025-07/22/2025: Timeline Editing #richard
 07/23/2025-07/29/2025: Statistical Analysis #santiago #richard
 07/25/2025-07/29/2025: Pilot Study #jack
@@ -46,7 +45,7 @@ group Project Presentation{
 08/10/2025-08/19/2025: The Problem #richard
 08/10/2025-08/19/2025: The Approach #jack
 08/10/2025-08/19/2025: The Results (including ethical) #santiago
-08/10/2025-08/19/2025: The Context #evan
+08/10/2025-08/19/2025: The Context #jack
 08/10/2025-08/19/2025: The Reflection #richard
 08/01/2025: Team Meeting #team
 08/08/2025: Team Meeting #team
@@ -59,10 +58,9 @@ group Final Report{
 
 08/01/2025: Team Meeting #team
 08/02/2025-08/20/2025: Results compared to Paper A #richard
-08/02/2025-08/20/2025: Results compared to Paper B #evan
-08/02/2025-08/20/2025: Results compared to Paper C #jack
+08/02/2025-08/20/2025: Results compared to Paper B #jack
 08/02/2025-08/20/2025: Data Analysis #santiago #jack
-08/02/2025-08/20/2025: Figure / Table Creation #evan
+08/02/2025-08/20/2025: Figure / Table Creation #santiago
 08/02/2025-08/20/2025:Technical Writing Editing: #richard
 08/15/2025: Team Meeting #team
 08/19/2025: Report Final Edits #team

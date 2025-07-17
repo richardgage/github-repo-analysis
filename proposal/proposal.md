@@ -163,7 +163,7 @@ This research will provide:
 
 
 ## Project Timeline
-
+![timeline](images/timeline.png)
 
 ## References
 

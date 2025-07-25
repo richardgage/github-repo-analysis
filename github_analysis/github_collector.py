@@ -44,20 +44,39 @@ class GitHubDataCollector:
                 time.sleep(wait_time + 10)
     
     def make_request(self, url, params=None):
-        """Make API request with rate limiting"""
+        """Make API request with rate limiting and better error reporting"""
         self.check_rate_limit()
+        
+        print(f"    Making request to: {url}")
+        if params:
+            print(f"    With params: {params}")
         
         response = requests.get(url, headers=self.headers, params=params)
         
-        if response.status_code == 403 and 'rate limit' in response.text.lower():
-            print("Rate limit exceeded. Waiting...")
-            time.sleep(3600)  # Wait 1 hour
-            response = requests.get(url, headers=self.headers, params=params)
+        print(f"    Response status: {response.status_code}")
+        
+        if response.status_code == 403:
+            if 'rate limit' in response.text.lower():
+                print("Rate limit exceeded. Waiting...")
+                time.sleep(3600)  # Wait 1 hour
+                response = requests.get(url, headers=self.headers, params=params)
+            else:
+                print(f"403 Forbidden (not rate limit): {response.text}")
+                return None
         
         if response.status_code == 200:
-            return response.json()
+            try:
+                data = response.json()
+                if isinstance(data, list):
+                    print(f"    Returned {len(data)} items")
+                elif isinstance(data, dict):
+                    print(f"    Returned dict with keys: {list(data.keys())[:5]}")
+                return data
+            except Exception as e:
+                print(f"    Error parsing JSON: {e}")
+                return None
         else:
-            print(f"Error {response.status_code}: {response.text}")
+            print(f"Error {response.status_code}: {response.text[:200]}")
             return None
     
     def get_repository_data(self, owner, repo):

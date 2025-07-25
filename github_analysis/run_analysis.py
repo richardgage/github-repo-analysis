@@ -20,90 +20,82 @@ from github_data_processor import RepositoryHealthAnalyzer, analyze_multiple_rep
 
 def get_sample_repositories():
     """
-    Get a sample of repositories to analyze
-    TEMPORARILY REDUCED for debugging - change back to full list once working
+    Get a sample of 50 repositories to analyze
+    Expanded to cover more languages, domains, and project sizes
     """
-    # Small test sample for debugging
     sample_repos = [
+        # JavaScript/Web Development (8 repos)
         ('facebook', 'react'),
+        ('vuejs', 'vue'),
+        ('angular', 'angular'),
+        ('nodejs', 'node'),
+        ('expressjs', 'express'),
+        ('webpack', 'webpack'),
+        ('facebook', 'create-react-app'),
+        ('vercel', 'next.js'),
+        
+        # Python (8 repos)
+        ('python', 'cpython'),
+        ('pallets', 'flask'),
+        ('django', 'django'),
+        ('numpy', 'numpy'),
+        ('pandas-dev', 'pandas'),
+        ('psf', 'requests'),
+        ('pytest-dev', 'pytest'),
+        ('scikit-learn', 'scikit-learn'),
+        
+        # Java (5 repos)
+        ('spring-projects', 'spring-boot'),
+        ('elastic', 'elasticsearch'),
+        ('apache', 'kafka'),
+        ('google', 'guava'),
+        ('ReactiveX', 'RxJava'),
+        
+        # C/C++ (4 repos)
+        ('torvalds', 'linux'),
+        ('microsoft', 'terminal'),
+        ('redis', 'redis'),
+        ('nginx', 'nginx'),
+        
+        # Go (5 repos)
+        ('golang', 'go'),
+        ('kubernetes', 'kubernetes'),
+        ('docker', 'docker'),
+        ('prometheus', 'prometheus'),
+        ('grafana', 'grafana'),
+        
+        # Machine Learning/AI (5 repos)
+        ('tensorflow', 'tensorflow'),
+        ('pytorch', 'pytorch'),
+        ('huggingface', 'transformers'),
+        ('microsoft', 'ML-For-Beginners'),
+        ('openai', 'whisper'),
+        
+        # Developer Tools (5 repos)
         ('microsoft', 'vscode'),
+        ('git', 'git'),
+        ('github', 'cli'),
+        ('atom', 'atom'),
+        ('neovim', 'neovim'),
+        
+        # Mobile Development (3 repos)
+        ('flutter', 'flutter'),
+        ('facebook', 'react-native'),
+        ('ionic-team', 'ionic-framework'),
+        
+        # Data Science/Analytics (3 repos)
+        ('jupyter', 'notebook'),
+        ('plotly', 'plotly.js'),
+        ('apache', 'superset'),
+        
+        # Rust (2 repos)
+        ('rust-lang', 'rust'),
+        ('denoland', 'deno'),
+        
+        # Small/Medium Projects for comparison (2 repos)
         ('octocat', 'Hello-World'),
+        ('github', 'docs'),
     ]
-    
-    # FULL LIST (uncomment when debugging is done):
-    # sample_repos = [
-    #     # JavaScript/Web Development (8 repos)
-    #     ('facebook', 'react'),
-    #     ('vuejs', 'vue'),
-    #     ('angular', 'angular'),
-    #     ('nodejs', 'node'),
-    #     ('expressjs', 'express'),
-    #     ('webpack', 'webpack'),
-    #     ('facebook', 'create-react-app'),
-    #     ('vercel', 'next.js'),
-    #     
-    #     # Python (8 repos)
-    #     ('python', 'cpython'),
-    #     ('pallets', 'flask'),
-    #     ('django', 'django'),
-    #     ('numpy', 'numpy'),
-    #     ('pandas-dev', 'pandas'),
-    #     ('psf', 'requests'),
-    #     ('pytest-dev', 'pytest'),
-    #     ('scikit-learn', 'scikit-learn'),
-    #     
-    #     # Java (5 repos)
-    #     ('spring-projects', 'spring-boot'),
-    #     ('elastic', 'elasticsearch'),
-    #     ('apache', 'kafka'),
-    #     ('google', 'guava'),
-    #     ('ReactiveX', 'RxJava'),
-    #     
-    #     # C/C++ (4 repos)
-    #     ('torvalds', 'linux'),
-    #     ('microsoft', 'terminal'),
-    #     ('redis', 'redis'),
-    #     ('nginx', 'nginx'),
-    #     
-    #     # Go (5 repos)
-    #     ('golang', 'go'),
-    #     ('kubernetes', 'kubernetes'),
-    #     ('docker', 'docker'),
-    #     ('prometheus', 'prometheus'),
-    #     ('grafana', 'grafana'),
-    #     
-    #     # Machine Learning/AI (5 repos)
-    #     ('tensorflow', 'tensorflow'),
-    #     ('pytorch', 'pytorch'),
-    #     ('huggingface', 'transformers'),
-    #     ('microsoft', 'ML-For-Beginners'),
-    #     ('openai', 'whisper'),
-    #     
-    #     # Developer Tools (5 repos)
-    #     ('microsoft', 'vscode'),
-    #     ('git', 'git'),
-    #     ('github', 'cli'),
-    #     ('atom', 'atom'),
-    #     ('neovim', 'neovim'),
-    #     
-    #     # Mobile Development (3 repos)
-    #     ('flutter', 'flutter'),
-    #     ('facebook', 'react-native'),
-    #     ('ionic-team', 'ionic-framework'),
-    #     
-    #     # Data Science/Analytics (3 repos)
-    #     ('jupyter', 'notebook'),
-    #     ('plotly', 'plotly.js'),
-    #     ('apache', 'superset'),
-    #     
-    #     # Rust (2 repos)
-    #     ('rust-lang', 'rust'),
-    #     ('denoland', 'deno'),
-    #     
-    #     # Small/Medium Projects for comparison (2 repos)
-    #     ('octocat', 'Hello-World'),
-    #     ('github', 'docs'),
-    # ]
     
     return sample_repos
 
@@ -140,19 +132,6 @@ def save_results(results, base_filename="github_analysis"):
                 'time_window_days': result['commits_metrics'].get('time_window_days', 180),
                 'core_contributors': result['contributors_metrics'].get('core_contributors', 0),
                 'contribution_gini': result['contributors_metrics'].get('contribution_gini', 0),
-                
-                # New high-priority metrics
-                'avg_response_time_hours': result['response_metrics'].get('avg_response_time_hours', 0),
-                'response_rate': result['response_metrics'].get('response_rate', 0),
-                'total_releases': result['release_metrics'].get('total_releases', 0),
-                'releases_per_month': result['release_metrics'].get('releases_per_month', 0),
-                'days_since_last_release': result['release_metrics'].get('days_since_last_release', 0),
-                'documentation_score': result['documentation_metrics'].get('documentation_score', 0),
-                'has_readme': result['documentation_metrics'].get('has_readme', False),
-                'has_contributing': result['documentation_metrics'].get('has_contributing', False),
-                'has_license': result['documentation_metrics'].get('has_license', False),
-                'pr_acceptance_rate': result['pr_metrics'].get('pr_acceptance_rate', 0),
-                'avg_time_to_merge_days': result['pr_metrics'].get('avg_time_to_merge_days', 0)
             }
             csv_data.append(csv_row)
     
@@ -166,31 +145,9 @@ def save_results(results, base_filename="github_analysis"):
     if csv_data:
         print(f"\n📊 Analysis Summary:")
         print(f"   Repositories analyzed: {len(csv_data)}")
-        
-        # Handle NaN values in health scores
-        valid_scores = [row['health_score'] for row in csv_data if row['health_score'] is not None and not pd.isna(row['health_score'])]
-        
-        if valid_scores:
-            avg_score = sum(valid_scores) / len(valid_scores)
-            print(f"   Average health score: {avg_score:.1f}")
-            
-            # Find highest scoring repo safely
-            max_score = max(valid_scores)
-            highest_repo = next(row['repository'] for row in csv_data if row['health_score'] == max_score)
-            print(f"   Highest scoring repo: {highest_repo}")
-            
-            # Find most stars safely
-            max_stars = max(row['stars'] for row in csv_data if row['stars'] is not None)
-            most_starred = next(row['repository'] for row in csv_data if row['stars'] == max_stars)
-            print(f"   Most stars: {most_starred} ({max_stars:,} stars)")
-        else:
-            print(f"   ⚠️  Warning: No valid health scores found!")
-            print(f"   This indicates an issue with the health score calculation.")
-            
-            # Show some sample data for debugging
-            print(f"\n🔍 Sample data for debugging:")
-            for i, row in enumerate(csv_data[:3]):
-                print(f"   Repo {i+1}: {row['repository']} - Health: {row['health_score']}")
+        print(f"   Average health score: {df['health_score'].mean():.1f}")
+        print(f"   Highest scoring repo: {df.loc[df['health_score'].idxmax(), 'repository']}")
+        print(f"   Most stars: {df.loc[df['stars'].idxmax(), 'repository']} ({df['stars'].max():,} stars)")
     
     return json_filename, csv_filename
 
@@ -225,7 +182,7 @@ def main():
     
     # Get repositories to analyze
     repositories = get_sample_repositories()
-    estimated_calls = len(repositories) * 25  # Updated estimate for more API calls
+    estimated_calls = len(repositories) * 15  # Rough estimate
     
     print(f"\n📋 Analysis Plan:")
     print(f"   Repositories to analyze: {len(repositories)}")

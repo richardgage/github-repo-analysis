@@ -32,20 +32,28 @@ class RepositoryHealthAnalyzer:
         
         return response_times
     
-    def analyze_issue_patterns(self, issues):
-        """Analyze issue creation and resolution patterns"""
+    def analyze_issue_patterns(self, issues, time_window_days=180):
+        """Analyze issue creation and resolution patterns within time window"""
         if not issues:
             return {}
         
-        open_issues = [issue for issue in issues if issue['state'] == 'open']
-        closed_issues = [issue for issue in issues if issue['state'] == 'closed']
+        # Filter issues to time window
+        cutoff_date = datetime.now() - timedelta(days=time_window_days)
+        recent_issues = []
         
-        # Calculate metrics
-        total_issues = len(issues)
-        open_count = len(open_issues)
-        closed_count = len(closed_issues)
+        for issue in issues:
+            created_at = datetime.strptime(issue['created_at'], '%Y-%m-%dT%H:%M:%SZ')
+            if created_at > cutoff_date:
+                recent_issues.append(issue)
         
-        # Issue labels analysis
+        # Analyze both all issues and recent issues
+        all_open = [issue for issue in issues if issue['state'] == 'open']
+        all_closed = [issue for issue in issues if issue['state'] == 'closed']
+        
+        recent_open = [issue for issue in recent_issues if issue['state'] == 'open']
+        recent_closed = [issue for issue in recent_issues if issue['state'] == 'closed']
+        
+        # Issue labels analysis (from all issues for broader context)
         all_labels = []
         for issue in issues:
             if issue.get('labels'):
@@ -53,25 +61,35 @@ class RepositoryHealthAnalyzer:
         
         label_counts = Counter(all_labels)
         
-        # Time-based analysis
-        recent_issues = []
-        six_months_ago = datetime.now() - timedelta(days=180)
-        
-        for issue in issues:
-            created_at = datetime.strptime(issue['created_at'], '%Y-%m-%dT%H:%M:%SZ')
-            if created_at > six_months_ago:
-                recent_issues.append(issue)
+        # Calculate resolution rate for recent issues
+        recent_total = len(recent_issues)
+        recent_resolution_rate = len(recent_closed) / recent_total if recent_total > 0 else 0
         
         return {
-            'total_issues': total_issues,
-            'open_issues': open_count,
-            'closed_issues': closed_count,
-            'open_ratio': open_count / total_issues if total_issues > 0 else 0,
-            'recent_issues_count': len(recent_issues),
+            # Overall metrics (for context)
+            'total_issues': len(issues),
+            'total_open_issues': len(all_open),
+            'total_closed_issues': len(all_closed),
+            'overall_open_ratio': len(all_open) / len(issues) if issues else 0,
+            
+            # Recent activity metrics (6-month window)
+            'recent_issues_count': recent_total,
+            'recent_open_count': len(recent_open),
+            'recent_closed_count': len(recent_closed),
+            'recent_resolution_rate': recent_resolution_rate,
+            'recent_issues_per_day': recent_total / time_window_days,
+            
+            # Communication metrics
             'avg_comments_per_issue': np.mean([issue['comments'] for issue in issues]) if issues else 0,
+            'recent_avg_comments': np.mean([issue['comments'] for issue in recent_issues]) if recent_issues else 0,
+            
+            # Organization metrics
             'most_common_labels': dict(label_counts.most_common(5)),
             'issues_with_assignees': len([i for i in issues if i.get('assignee')]),
-            'issues_with_labels': len([i for i in issues if i.get('labels')])
+            'issues_with_labels': len([i for i in issues if i.get('labels')]),
+            
+            # Time window info
+            'time_window_days': time_window_days
         }
     
     def analyze_contributor_health(self, contributors, commits):
@@ -113,8 +131,8 @@ class RepositoryHealthAnalyzer:
             'top_contributor_percentage': max(contributions) / total_contributions if total_contributions > 0 else 0
         }
     
-    def analyze_commit_patterns(self, commits):
-        """Analyze commit frequency and patterns"""
+    def analyze_commit_patterns(self, commits, time_window_days=180):
+        """Analyze commit frequency and patterns within a specific time window"""
         if not commits:
             return {}
         
@@ -125,22 +143,28 @@ class RepositoryHealthAnalyzer:
             commit_date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
             commit_dates.append(commit_date)
         
-        # Calculate commit frequency
+        # Calculate commit frequency over the specified time window
         if commit_dates:
-            date_range = max(commit_dates) - min(commit_dates)
-            days_active = date_range.days if date_range.days > 0 else 1
-            commits_per_day = len(commits) / days_active
+            # Use the full time window for calculation (not just the range of collected commits)
+            total_commits = len(commits)
+            commits_per_day = total_commits / time_window_days
             
-            # Weekly pattern
+            # Weekly pattern analysis
             weekly_commits = {}
             for date in commit_dates:
                 week = date.strftime('%Y-W%U')
                 weekly_commits[week] = weekly_commits.get(week, 0) + 1
             
             avg_weekly_commits = np.mean(list(weekly_commits.values())) if weekly_commits else 0
+            
+            # Active days calculation
+            unique_days = len(set(date.date() for date in commit_dates))
+            activity_ratio = unique_days / time_window_days  # What percentage of days had commits
         else:
             commits_per_day = 0
             avg_weekly_commits = 0
+            activity_ratio = 0
+            unique_days = 0
         
         # Analyze commit authors
         authors = [commit['commit']['author']['name'] for commit in commits]
@@ -151,7 +175,9 @@ class RepositoryHealthAnalyzer:
             'unique_authors': unique_authors,
             'commits_per_day': commits_per_day,
             'avg_weekly_commits': avg_weekly_commits,
-            'days_with_activity': len(set(date.date() for date in commit_dates)) if commit_dates else 0
+            'days_with_activity': unique_days,
+            'activity_ratio': activity_ratio,  # New metric: percentage of days with commits
+            'time_window_days': time_window_days
         }
     
     def calculate_health_score(self, repo_data, issues_analysis, contributors_analysis, commits_analysis):
@@ -239,8 +265,10 @@ def analyze_multiple_repositories(collector, repository_list):
     analyzer = RepositoryHealthAnalyzer()
     results = []
     
+    repo_count = 0
+
     for owner, repo in repository_list:
-        print(f"Analyzing {owner}/{repo}...")
+        print(f"#{repo_count}: Analyzing {owner}/{repo}...")
         
         try:
             # Collect data
@@ -252,6 +280,7 @@ def analyze_multiple_repositories(collector, repository_list):
             # Analyze
             analysis = analyzer.analyze_repository(repo_data, issues, contributors, commits)
             results.append(analysis)
+            repo_count += 1
             
             # Be nice to the API
             time.sleep(1)

@@ -20,58 +20,79 @@ from github_data_processor import RepositoryHealthAnalyzer, analyze_multiple_rep
 
 def get_sample_repositories():
     """
-    Get a sample of repositories to analyze
-    You can modify this list based on your research needs
+    Get a sample of 50 repositories to analyze
+    Expanded to cover more languages, domains, and project sizes
     """
-    # Popular repositories from different languages and domains
     sample_repos = [
-        # JavaScript/Web Development
+        # JavaScript/Web Development (8 repos)
         ('facebook', 'react'),
         ('vuejs', 'vue'),
         ('angular', 'angular'),
         ('nodejs', 'node'),
         ('expressjs', 'express'),
+        ('webpack', 'webpack'),
+        ('facebook', 'create-react-app'),
+        ('vercel', 'next.js'),
         
-        # Python
+        # Python (8 repos)
         ('python', 'cpython'),
         ('pallets', 'flask'),
         ('django', 'django'),
         ('numpy', 'numpy'),
         ('pandas-dev', 'pandas'),
+        ('psf', 'requests'),
+        ('pytest-dev', 'pytest'),
+        ('scikit-learn', 'scikit-learn'),
         
-        # Java
+        # Java (5 repos)
         ('spring-projects', 'spring-boot'),
         ('elastic', 'elasticsearch'),
         ('apache', 'kafka'),
+        ('google', 'guava'),
+        ('ReactiveX', 'RxJava'),
         
-        # C/C++
+        # C/C++ (4 repos)
         ('torvalds', 'linux'),
         ('microsoft', 'terminal'),
+        ('redis', 'redis'),
+        ('nginx', 'nginx'),
         
-        # Go
+        # Go (5 repos)
         ('golang', 'go'),
         ('kubernetes', 'kubernetes'),
         ('docker', 'docker'),
+        ('prometheus', 'prometheus'),
+        ('grafana', 'grafana'),
         
-        # Machine Learning
+        # Machine Learning/AI (5 repos)
         ('tensorflow', 'tensorflow'),
         ('pytorch', 'pytorch'),
-        ('scikit-learn', 'scikit-learn'),
+        ('huggingface', 'transformers'),
+        ('microsoft', 'ML-For-Beginners'),
+        ('openai', 'whisper'),
         
-        # Developer Tools
+        # Developer Tools (5 repos)
         ('microsoft', 'vscode'),
         ('git', 'git'),
         ('github', 'cli'),
+        ('atom', 'atom'),
+        ('neovim', 'neovim'),
         
-        # Mobile
+        # Mobile Development (3 repos)
         ('flutter', 'flutter'),
         ('facebook', 'react-native'),
+        ('ionic-team', 'ionic-framework'),
         
-        # Data Science
+        # Data Science/Analytics (3 repos)
         ('jupyter', 'notebook'),
         ('plotly', 'plotly.js'),
+        ('apache', 'superset'),
         
-        # Smaller/Medium Projects for comparison
+        # Rust (2 repos)
+        ('rust-lang', 'rust'),
+        ('denoland', 'deno'),
+        
+        # Small/Medium Projects for comparison (2 repos)
         ('octocat', 'Hello-World'),
         ('github', 'docs'),
     ]
@@ -101,9 +122,14 @@ def save_results(results, base_filename="github_analysis"):
                 'language': result['basic_stats']['language'],
                 'total_contributors': result['contributors_metrics'].get('total_contributors', 0),
                 'total_commits': result['commits_metrics'].get('total_commits', 0),
-                'open_ratio': result['issues_metrics'].get('open_ratio', 0),
+                'open_ratio': result['issues_metrics'].get('overall_open_ratio', 0),
+                'recent_issues_count': result['issues_metrics'].get('recent_issues_count', 0),
+                'recent_issues_per_day': result['issues_metrics'].get('recent_issues_per_day', 0),
+                'recent_resolution_rate': result['issues_metrics'].get('recent_resolution_rate', 0),
                 'avg_comments_per_issue': result['issues_metrics'].get('avg_comments_per_issue', 0),
                 'commits_per_day': result['commits_metrics'].get('commits_per_day', 0),
+                'activity_ratio': result['commits_metrics'].get('activity_ratio', 0),
+                'time_window_days': result['commits_metrics'].get('time_window_days', 180),
                 'core_contributors': result['contributors_metrics'].get('core_contributors', 0),
                 'contribution_gini': result['contributors_metrics'].get('contribution_gini', 0),
             }

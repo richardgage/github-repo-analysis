@@ -65,8 +65,8 @@ class GitHubDataCollector:
         url = f"{self.base_url}/repos/{owner}/{repo}"
         return self.make_request(url)
     
-    def get_issues_data(self, owner, repo, state='all', per_page=100):
-        """Get issues data with comments"""
+    def get_issues_data(self, owner, repo, state='all', per_page=100, months_back=6):
+        """Get issues data with optional time filtering"""
         url = f"{self.base_url}/repos/{owner}/{repo}/issues"
         params = {
             'state': state,
@@ -75,10 +75,15 @@ class GitHubDataCollector:
             'direction': 'desc'
         }
         
+        # Add time filter for recent issues
+        if months_back:
+            since_date = datetime.now() - timedelta(days=months_back * 30)
+            params['since'] = since_date.isoformat()
+        
         all_issues = []
         page = 1
         
-        while len(all_issues) < 500:  # Limit to avoid excessive API calls
+        while len(all_issues) < 500:  # Reasonable limit
             params['page'] = page
             issues = self.make_request(url, params)
             
@@ -123,17 +128,21 @@ class GitHubDataCollector:
         return all_contributors
     
     def get_commits_data(self, owner, repo, since_date=None):
-        """Get recent commits data"""
+        """Get commits data within a specific time window"""
         url = f"{self.base_url}/repos/{owner}/{repo}/commits"
         params = {'per_page': 100}
         
-        if since_date:
-            params['since'] = since_date.isoformat()
+        # Always use a since_date for consistent time windows
+        if not since_date:
+            since_date = datetime.now() - timedelta(days=180)  # Default: 6 months
+        
+        params['since'] = since_date.isoformat()
         
         all_commits = []
         page = 1
         
-        while len(all_commits) < 300:  # Limit commits to recent activity
+        # Remove arbitrary commit limit, let time window control it
+        while page <= 20:  # Max 20 pages (2000 commits) to prevent runaway
             params['page'] = page
             commits = self.make_request(url, params)
             

@@ -22,7 +22,7 @@ def test_basic_connection():
     token = os.getenv('GITHUB_TOKEN')
     
     if not token:
-        print("ERROR: No GitHub token found!")
+        print("❌ ERROR: No GitHub token found!")
         print("Make sure you have a .env file with GITHUB_TOKEN=your_token")
         return False
     
@@ -46,7 +46,7 @@ def test_basic_connection():
         print(f"✓ Rate limit: {remaining}/{limit} calls remaining")
         return True
     else:
-        print(f"API access failed: {response.status_code}")
+        print(f"❌ API access failed: {response.status_code}")
         print(f"Response: {response.text}")
         return False
 
@@ -80,7 +80,7 @@ def test_repository_access():
         print(f"  Created: {data['created_at']}")
         return True
     else:
-        print(f"Failed to get repository data: {response.status_code}")
+        print(f"❌ Failed to get repository data: {response.status_code}")
         print(f"Response: {response.text}")
         return False
 
@@ -118,7 +118,7 @@ def test_issues_access():
         
         return True
     else:
-        print(f"Failed to get issues data: {response.status_code}")
+        print(f"❌ Failed to get issues data: {response.status_code}")
         print(f"Response: {response.text}")
         return False
 
@@ -129,21 +129,21 @@ def main():
     
     # Test 1: Basic connection
     if not test_basic_connection():
-        print("\nBasic connection failed. Check your token setup.")
+        print("\n❌ Basic connection failed. Check your token setup.")
         return
     
     # Test 2: Repository access
     if not test_repository_access():
-        print("\nRepository access failed.")
+        print("\n❌ Repository access failed.")
         return
     
     # Test 3: Issues access
     if not test_issues_access():
-        print("\nIssues access failed.")
+        print("\n❌ Issues access failed.")
         return
     
     print("\n" + "="*50)
-    print("All tests passed! Your GitHub API setup is working!")
+    print("🎉 All tests passed! Your GitHub API setup is working!")
     print("You can now run the full data collection script.")
 
 if __name__ == "__main__":

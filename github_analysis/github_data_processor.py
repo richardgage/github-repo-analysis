@@ -94,42 +94,90 @@ class RepositoryHealthAnalyzer:
     
     def analyze_contributor_health(self, contributors, commits):
         """Analyze contributor activity and diversity"""
-        if not contributors:
-            return {}
+        if not contributors or len(contributors) == 0:
+            print("Warning: No contributors data available")
+            return {
+                'total_contributors': 0,
+                'core_contributors': 0,
+                'core_contribution_ratio': 0,
+                'contribution_gini': 0,
+                'avg_contributions': 0,
+                'median_contributions': 0,
+                'top_contributor_percentage': 0
+            }
         
-        total_contributors = len(contributors)
-        
-        # Analyze contribution distribution
-        contributions = [contrib['contributions'] for contrib in contributors]
-        
-        # Calculate Gini coefficient for contribution inequality
-        def gini_coefficient(x):
-            sorted_x = sorted(x)
-            n = len(x)
-            cumsum = np.cumsum(sorted_x)
-            return (n + 1 - 2 * sum((n + 1 - i) * y for i, y in enumerate(sorted_x))) / (n * sum(sorted_x))
-        
-        gini = gini_coefficient(contributions) if len(contributions) > 1 else 0
-        
-        # Core vs peripheral contributors
-        total_contributions = sum(contributions)
-        core_contributors = 0
-        core_contributions = 0
-        
-        for contrib in contributions:
-            if contrib >= total_contributions * 0.1:  # Contributors with >10% of total contributions
-                core_contributors += 1
-                core_contributions += contrib
-        
-        return {
-            'total_contributors': total_contributors,
-            'core_contributors': core_contributors,
-            'core_contribution_ratio': core_contributions / total_contributions if total_contributions > 0 else 0,
-            'contribution_gini': gini,
-            'avg_contributions': np.mean(contributions) if contributions else 0,
-            'median_contributions': np.median(contributions) if contributions else 0,
-            'top_contributor_percentage': max(contributions) / total_contributions if total_contributions > 0 else 0
-        }
+        try:
+            total_contributors = len(contributors)
+            
+            # Analyze contribution distribution
+            contributions = []
+            for contrib in contributors:
+                if isinstance(contrib, dict) and 'contributions' in contrib:
+                    contributions.append(contrib['contributions'])
+                else:
+                    print(f"Warning: Invalid contributor data: {contrib}")
+            
+            if not contributions:
+                print("Warning: No valid contribution data found")
+                return {
+                    'total_contributors': total_contributors,
+                    'core_contributors': 0,
+                    'core_contribution_ratio': 0,
+                    'contribution_gini': 0,
+                    'avg_contributions': 0,
+                    'median_contributions': 0,
+                    'top_contributor_percentage': 0
+                }
+            
+            # Calculate Gini coefficient for contribution inequality
+            def gini_coefficient(x):
+                if len(x) <= 1:
+                    return 0
+                sorted_x = sorted(x)
+                n = len(x)
+                cumsum = np.cumsum(sorted_x)
+                return (n + 1 - 2 * sum((n + 1 - i) * y for i, y in enumerate(sorted_x))) / (n * sum(sorted_x))
+            
+            gini = gini_coefficient(contributions) if len(contributions) > 1 else 0
+            
+            # Core vs peripheral contributors
+            total_contributions = sum(contributions)
+            core_contributors = 0
+            core_contributions = 0
+            
+            if total_contributions > 0:
+                for contrib in contributions:
+                    if contrib >= total_contributions * 0.1:  # Contributors with >10% of total contributions
+                        core_contributors += 1
+                        core_contributions += contrib
+                
+                core_ratio = core_contributions / total_contributions
+                top_percentage = max(contributions) / total_contributions
+            else:
+                core_ratio = 0
+                top_percentage = 0
+            
+            return {
+                'total_contributors': total_contributors,
+                'core_contributors': core_contributors,
+                'core_contribution_ratio': core_ratio,
+                'contribution_gini': gini,
+                'avg_contributions': np.mean(contributions) if contributions else 0,
+                'median_contributions': np.median(contributions) if contributions else 0,
+                'top_contributor_percentage': top_percentage
+            }
+            
+        except Exception as e:
+            print(f"Error in contributor analysis: {e}")
+            return {
+                'total_contributors': len(contributors) if contributors else 0,
+                'core_contributors': 0,
+                'core_contribution_ratio': 0,
+                'contribution_gini': 0,
+                'avg_contributions': 0,
+                'median_contributions': 0,
+                'top_contributor_percentage': 0
+            }
     
     def analyze_commit_patterns(self, commits, time_window_days=180):
         """Analyze commit frequency and patterns within a specific time window"""
@@ -347,44 +395,60 @@ class RepositoryHealthAnalyzer:
     
     def analyze_documentation_quality(self, repo_data, contents):
         """Assess documentation quality based on key files"""
-        if not contents:
+        try:
+            if not contents or not isinstance(contents, list):
+                print("Warning: No repository contents available for documentation analysis")
+                return {
+                    'documentation_score': 20,  # Give some points for having a repo
+                    'has_readme': False,
+                    'has_contributing': False,
+                    'has_license': False,
+                    'has_changelog': False,
+                    'readme_length': 0
+                }
+            
+            # Look for key documentation files
+            file_names = []
+            for item in contents:
+                if isinstance(item, dict) and item.get('type') == 'file':
+                    file_names.append(item.get('name', '').lower())
+            
+            has_readme = any('readme' in name for name in file_names)
+            has_contributing = any('contributing' in name for name in file_names)
+            has_license = any('license' in name or 'licence' in name for name in file_names)
+            has_changelog = any('changelog' in name or 'history' in name for name in file_names)
+            
+            # Get README length if available
+            readme_length = 0
+            if repo_data and 'description' in repo_data and repo_data['description']:
+                readme_length = len(repo_data['description'])
+            
+            # Calculate documentation score
+            doc_score = 0
+            if has_readme: doc_score += 40
+            if has_contributing: doc_score += 25
+            if has_license: doc_score += 20
+            if has_changelog: doc_score += 15
+            
             return {
-                'documentation_score': 0,
+                'documentation_score': doc_score,
+                'has_readme': has_readme,
+                'has_contributing': has_contributing,
+                'has_license': has_license,
+                'has_changelog': has_changelog,
+                'readme_length': readme_length
+            }
+            
+        except Exception as e:
+            print(f"Error in documentation analysis: {e}")
+            return {
+                'documentation_score': 20,  # Default score
                 'has_readme': False,
                 'has_contributing': False,
                 'has_license': False,
                 'has_changelog': False,
                 'readme_length': 0
             }
-        
-        # Look for key documentation files
-        file_names = [item['name'].lower() for item in contents if item['type'] == 'file']
-        
-        has_readme = any('readme' in name for name in file_names)
-        has_contributing = any('contributing' in name for name in file_names)
-        has_license = any('license' in name or 'licence' in name for name in file_names)
-        has_changelog = any('changelog' in name or 'history' in name for name in file_names)
-        
-        # Get README length if available
-        readme_length = 0
-        if repo_data and 'description' in repo_data:
-            readme_length = len(repo_data.get('description', ''))
-        
-        # Calculate documentation score
-        doc_score = 0
-        if has_readme: doc_score += 40
-        if has_contributing: doc_score += 25
-        if has_license: doc_score += 20
-        if has_changelog: doc_score += 15
-        
-        return {
-            'documentation_score': doc_score,
-            'has_readme': has_readme,
-            'has_contributing': has_contributing,
-            'has_license': has_license,
-            'has_changelog': has_changelog,
-            'readme_length': readme_length
-        }
     
     def analyze_pull_request_patterns(self, pull_requests):
         """Analyze pull request acceptance and review patterns"""
@@ -435,23 +499,59 @@ class RepositoryHealthAnalyzer:
         }
     
     def analyze_repository(self, repo_data, issues, contributors, commits, releases=None, pull_requests=None, contents=None, collector=None, owner=None, repo=None):
-        """Complete repository analysis with new metrics"""
-        issues_analysis = self.analyze_issue_patterns(issues)
-        contributors_analysis = self.analyze_contributor_health(contributors, commits)
-        commits_analysis = self.analyze_commit_patterns(commits)
+        """Complete repository analysis with new metrics and error handling"""
+        try:
+            issues_analysis = self.analyze_issue_patterns(issues)
+        except Exception as e:
+            print(f"Error analyzing issues: {e}")
+            issues_analysis = {}
         
-        # New high-priority metrics
+        try:
+            contributors_analysis = self.analyze_contributor_health(contributors, commits)
+        except Exception as e:
+            print(f"Error analyzing contributors: {e}")
+            contributors_analysis = {}
+        
+        try:
+            commits_analysis = self.analyze_commit_patterns(commits)
+        except Exception as e:
+            print(f"Error analyzing commits: {e}")
+            commits_analysis = {}
+        
+        # New high-priority metrics with error handling
         response_analysis = {}
         if collector and owner and repo and issues:
-            response_analysis = self.analyze_issue_response_times(issues, collector, owner, repo)
+            try:
+                response_analysis = self.analyze_issue_response_times(issues, collector, owner, repo)
+            except Exception as e:
+                print(f"Error analyzing response times: {e}")
+                response_analysis = {}
         
-        release_analysis = self.analyze_release_patterns(releases) if releases else {}
-        documentation_analysis = self.analyze_documentation_quality(repo_data, contents)
-        pr_analysis = self.analyze_pull_request_patterns(pull_requests) if pull_requests else {}
+        try:
+            release_analysis = self.analyze_release_patterns(releases) if releases else {}
+        except Exception as e:
+            print(f"Error analyzing releases: {e}")
+            release_analysis = {}
         
-        health_score = self.calculate_health_score(
-            repo_data, issues_analysis, contributors_analysis, commits_analysis
-        )
+        try:
+            documentation_analysis = self.analyze_documentation_quality(repo_data, contents)
+        except Exception as e:
+            print(f"Error analyzing documentation: {e}")
+            documentation_analysis = {}
+        
+        try:
+            pr_analysis = self.analyze_pull_request_patterns(pull_requests) if pull_requests else {}
+        except Exception as e:
+            print(f"Error analyzing pull requests: {e}")
+            pr_analysis = {}
+        
+        try:
+            health_score = self.calculate_health_score(
+                repo_data, issues_analysis, contributors_analysis, commits_analysis
+            )
+        except Exception as e:
+            print(f"Error calculating health score: {e}")
+            health_score = 0
         
         return {
             'repository': repo_data.get('full_name', 'Unknown') if repo_data else 'Unknown',

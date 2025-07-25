@@ -1,0 +1,179 @@
+[
+  {
+    "repository": "facebook/react",
+    "health_score": null,
+    "basic_stats": {
+      "stars": 237592,
+      "forks": 49003,
+      "open_issues": 1022,
+      "language": "JavaScript",
+      "created_at": "2013-05-24T16:15:54Z",
+      "updated_at": "2025-07-25T17:21:19Z"
+    },
+    "issues_metrics": {
+      "total_issues": 50,
+      "total_open_issues": 5,
+      "total_closed_issues": 45,
+      "overall_open_ratio": 0.1,
+      "recent_issues_count": 50,
+      "recent_open_count": 5,
+      "recent_closed_count": 45,
+      "recent_resolution_rate": 0.9,
+      "recent_issues_per_day": 0.2777777777777778,
+      "avg_comments_per_issue": 1.14,
+      "recent_avg_comments": 1.14,
+      "most_common_labels": {
+        "Status: Unconfirmed": 4,
+        "Type: Bug": 2,
+        "Component: React Compiler": 1,
+        "Component: Server Rendering": 1
+      },
+      "issues_with_assignees": 0,
+      "issues_with_labels": 6,
+      "time_window_days": 180
+    },
+    "contributors_metrics": {
+      "total_contributors": 0,
+      "core_contributors": 0,
+      "core_contribution_ratio": 0,
+      "contribution_gini": 0,
+      "avg_contributions": 0,
+      "median_contributions": 0,
+      "top_contributor_percentage": 0
+    },
+    "commits_metrics": {
+      "total_commits": 720,
+      "unique_authors": 61,
+      "commits_per_day": 4.0,
+      "avg_weekly_commits": 27.692307692307693,
+      "days_with_activity": 142,
+      "activity_ratio": 0.7888888888888889,
+      "time_window_days": 180
+    },
+    "response_metrics": {},
+    "release_metrics": {},
+    "documentation_metrics": {
+      "documentation_score": 20,
+      "has_readme": false,
+      "has_contributing": false,
+      "has_license": false,
+      "has_changelog": false,
+      "readme_length": 0
+    },
+    "pr_metrics": {}
+  },
+  {
+    "repository": "microsoft/vscode",
+    "health_score": null,
+    "basic_stats": {
+      "stars": 174970,
+      "forks": 33948,
+      "open_issues": 11957,
+      "language": "TypeScript",
+      "created_at": "2015-09-03T20:23:38Z",
+      "updated_at": "2025-07-25T18:05:12Z"
+    },
+    "issues_metrics": {
+      "total_issues": 84,
+      "total_open_issues": 65,
+      "total_closed_issues": 19,
+      "overall_open_ratio": 0.7738095238095238,
+      "recent_issues_count": 84,
+      "recent_open_count": 65,
+      "recent_closed_count": 19,
+      "recent_resolution_rate": 0.2261904761904762,
+      "recent_issues_per_day": 0.4666666666666667,
+      "avg_comments_per_issue": 0.9404761904761905,
+      "recent_avg_comments": 0.9404761904761905,
+      "most_common_labels": {
+        "new release": 35,
+        "info-needed": 20,
+        "triage-needed": 14,
+        "ai-translated": 6,
+        "debt": 4
+      },
+      "issues_with_assignees": 48,
+      "issues_with_labels": 62,
+      "time_window_days": 180
+    },
+    "contributors_metrics": {
+      "total_contributors": 0,
+      "core_contributors": 0,
+      "core_contribution_ratio": 0,
+      "contribution_gini": 0,
+      "avg_contributions": 0,
+      "median_contributions": 0,
+      "top_contributor_percentage": 0
+    },
+    "commits_metrics": {
+      "total_commits": 2000,
+      "unique_authors": 127,
+      "commits_per_day": 11.11111111111111,
+      "avg_weekly_commits": 222.22222222222223,
+      "days_with_activity": 58,
+      "activity_ratio": 0.32222222222222224,
+      "time_window_days": 180
+    },
+    "response_metrics": {},
+    "release_metrics": {},
+    "documentation_metrics": {
+      "documentation_score": 20,
+      "has_readme": false,
+      "has_contributing": false,
+      "has_license": false,
+      "has_changelog": false,
+      "readme_length": 0
+    },
+    "pr_metrics": {}
+  },
+  {
+    "repository": "octocat/Hello-World",
+    "health_score": null,
+    "basic_stats": {
+      "stars": 3040,
+      "forks": 3275,
+      "open_issues": 1793,
+      "language": null,
+      "created_at": "2011-01-26T19:01:12Z",
+      "updated_at": "2025-07-25T15:44:48Z"
+    },
+    "issues_metrics": {
+      "total_issues": 37,
+      "total_open_issues": 32,
+      "total_closed_issues": 5,
+      "overall_open_ratio": 0.8648648648648649,
+      "recent_issues_count": 37,
+      "recent_open_count": 32,
+      "recent_closed_count": 5,
+      "recent_resolution_rate": 0.13513513513513514,
+      "recent_issues_per_day": 0.20555555555555555,
+      "avg_comments_per_issue": 0.21621621621621623,
+      "recent_avg_comments": 0.21621621621621623,
+      "most_common_labels": {},
+      "issues_with_assignees": 0,
+      "issues_with_labels": 0,
+      "time_window_days": 180
+    },
+    "contributors_metrics": {
+      "total_contributors": 0,
+      "core_contributors": 0,
+      "core_contribution_ratio": 0,
+      "contribution_gini": 0,
+      "avg_contributions": 0,
+      "median_contributions": 0,
+      "top_contributor_percentage": 0
+    },
+    "commits_metrics": {},
+    "response_metrics": {},
+    "release_metrics": {},
+    "documentation_metrics": {
+      "documentation_score": 20,
+      "has_readme": false,
+      "has_contributing": false,
+      "has_license": false,
+      "has_changelog": false,
+      "readme_length": 0
+    },
+    "pr_metrics": {}
+  }
+]

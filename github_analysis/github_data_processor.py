@@ -231,13 +231,223 @@ class RepositoryHealthAnalyzer:
         elif stars > 0:
             score += 5
         
-        return min(score, max_score)
+    def analyze_issue_response_times(self, issues, collector, owner, repo):
+        """Analyze how quickly issues get first responses"""
+        if not issues or len(issues) < 5:  # Skip if too few issues
+            return {
+                'avg_response_time_hours': 0,
+                'median_response_time_hours': 0,
+                'response_rate': 0,
+                'sample_size': 0
+            }
+        
+        response_times = []
+        responded_count = 0
+        
+        # Sample recent issues to avoid too many API calls
+        sample_issues = issues[:10]  # Check first 10 issues for response times
+        
+        for issue in sample_issues:
+            if issue['comments'] > 0:
+                try:
+                    comments = collector.get_issue_comments(owner, repo, issue['number'])
+                    if comments:
+                        issue_created = datetime.strptime(issue['created_at'], '%Y-%m-%dT%H:%M:%SZ')
+                        first_comment = datetime.strptime(comments[0]['created_at'], '%Y-%m-%dT%H:%M:%SZ')
+                        
+                        # Only count if comment is not from issue creator
+                        if comments[0]['user']['login'] != issue['user']['login']:
+                            response_time = (first_comment - issue_created).total_seconds() / 3600  # hours
+                            response_times.append(response_time)
+                            responded_count += 1
+                    
+                    time.sleep(0.2)  # Be gentle with API
+                except Exception as e:
+                    continue
+        
+        if response_times:
+            avg_response = np.mean(response_times)
+            median_response = np.median(response_times)
+        else:
+            avg_response = 0
+            median_response = 0
+        
+        response_rate = responded_count / len(sample_issues) if sample_issues else 0
+        
+        return {
+            'avg_response_time_hours': avg_response,
+            'median_response_time_hours': median_response,
+            'response_rate': response_rate,
+            'sample_size': len(sample_issues)
+        }
     
-    def analyze_repository(self, repo_data, issues, contributors, commits):
-        """Complete repository analysis"""
+    def analyze_release_patterns(self, releases):
+        """Analyze release frequency and patterns"""
+        if not releases:
+            return {
+                'total_releases': 0,
+                'releases_per_month': 0,
+                'days_since_last_release': 0,
+                'avg_days_between_releases': 0,
+                'release_consistency': 0
+            }
+        
+        # Parse release dates
+        release_dates = []
+        for release in releases:
+            if not release.get('draft', False):  # Skip draft releases
+                date_str = release.get('published_at') or release.get('created_at')
+                if date_str:
+                    release_date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
+                    release_dates.append(release_date)
+        
+        if not release_dates:
+            return {
+                'total_releases': 0,
+                'releases_per_month': 0,
+                'days_since_last_release': 0,
+                'avg_days_between_releases': 0,
+                'release_consistency': 0
+            }
+        
+        release_dates.sort(reverse=True)  # Most recent first
+        
+        # Calculate metrics
+        total_releases = len(release_dates)
+        days_since_last = (datetime.now() - release_dates[0]).days
+        
+        # Calculate average time between releases
+        if len(release_dates) > 1:
+            time_spans = []
+            for i in range(len(release_dates) - 1):
+                span = (release_dates[i] - release_dates[i + 1]).days
+                time_spans.append(span)
+            
+            avg_days_between = np.mean(time_spans)
+            # Consistency: lower standard deviation = more consistent
+            consistency = 1 / (1 + np.std(time_spans) / avg_days_between) if avg_days_between > 0 else 0
+        else:
+            avg_days_between = 0
+            consistency = 0
+        
+        # Calculate releases per month based on project age
+        if len(release_dates) > 1:
+            project_age_days = (release_dates[0] - release_dates[-1]).days
+            releases_per_month = (total_releases / project_age_days) * 30 if project_age_days > 0 else 0
+        else:
+            releases_per_month = 0
+        
+        return {
+            'total_releases': total_releases,
+            'releases_per_month': releases_per_month,
+            'days_since_last_release': days_since_last,
+            'avg_days_between_releases': avg_days_between,
+            'release_consistency': consistency
+        }
+    
+    def analyze_documentation_quality(self, repo_data, contents):
+        """Assess documentation quality based on key files"""
+        if not contents:
+            return {
+                'documentation_score': 0,
+                'has_readme': False,
+                'has_contributing': False,
+                'has_license': False,
+                'has_changelog': False,
+                'readme_length': 0
+            }
+        
+        # Look for key documentation files
+        file_names = [item['name'].lower() for item in contents if item['type'] == 'file']
+        
+        has_readme = any('readme' in name for name in file_names)
+        has_contributing = any('contributing' in name for name in file_names)
+        has_license = any('license' in name or 'licence' in name for name in file_names)
+        has_changelog = any('changelog' in name or 'history' in name for name in file_names)
+        
+        # Get README length if available
+        readme_length = 0
+        if repo_data and 'description' in repo_data:
+            readme_length = len(repo_data.get('description', ''))
+        
+        # Calculate documentation score
+        doc_score = 0
+        if has_readme: doc_score += 40
+        if has_contributing: doc_score += 25
+        if has_license: doc_score += 20
+        if has_changelog: doc_score += 15
+        
+        return {
+            'documentation_score': doc_score,
+            'has_readme': has_readme,
+            'has_contributing': has_contributing,
+            'has_license': has_license,
+            'has_changelog': has_changelog,
+            'readme_length': readme_length
+        }
+    
+    def analyze_pull_request_patterns(self, pull_requests):
+        """Analyze pull request acceptance and review patterns"""
+        if not pull_requests:
+            return {
+                'total_prs': 0,
+                'pr_acceptance_rate': 0,
+                'avg_pr_comments': 0,
+                'external_pr_rate': 0,
+                'avg_time_to_merge_days': 0
+            }
+        
+        total_prs = len(pull_requests)
+        merged_prs = 0
+        external_prs = 0
+        total_comments = 0
+        merge_times = []
+        
+        for pr in pull_requests:
+            # Count merged PRs
+            if pr.get('merged_at'):
+                merged_prs += 1
+                
+                # Calculate time to merge
+                created_at = datetime.strptime(pr['created_at'], '%Y-%m-%dT%H:%M:%SZ')
+                merged_at = datetime.strptime(pr['merged_at'], '%Y-%m-%dT%H:%M:%SZ')
+                merge_time = (merged_at - created_at).days
+                merge_times.append(merge_time)
+            
+            # Count external PRs (from non-members)
+            # Note: This is a simplified check - in reality you'd need to check organization membership
+            total_comments += pr.get('comments', 0) + pr.get('review_comments', 0)
+        
+        acceptance_rate = merged_prs / total_prs if total_prs > 0 else 0
+        avg_comments = total_comments / total_prs if total_prs > 0 else 0
+        avg_merge_time = np.mean(merge_times) if merge_times else 0
+        
+        # External PR rate is harder to calculate without organization info
+        # For now, we'll estimate based on PR patterns
+        external_pr_rate = 0.5  # Placeholder - would need additional API calls to determine accurately
+        
+        return {
+            'total_prs': total_prs,
+            'pr_acceptance_rate': acceptance_rate,
+            'avg_pr_comments': avg_comments,
+            'external_pr_rate': external_pr_rate,
+            'avg_time_to_merge_days': avg_merge_time
+        }
+    
+    def analyze_repository(self, repo_data, issues, contributors, commits, releases=None, pull_requests=None, contents=None, collector=None, owner=None, repo=None):
+        """Complete repository analysis with new metrics"""
         issues_analysis = self.analyze_issue_patterns(issues)
         contributors_analysis = self.analyze_contributor_health(contributors, commits)
         commits_analysis = self.analyze_commit_patterns(commits)
+        
+        # New high-priority metrics
+        response_analysis = {}
+        if collector and owner and repo and issues:
+            response_analysis = self.analyze_issue_response_times(issues, collector, owner, repo)
+        
+        release_analysis = self.analyze_release_patterns(releases) if releases else {}
+        documentation_analysis = self.analyze_documentation_quality(repo_data, contents)
+        pr_analysis = self.analyze_pull_request_patterns(pull_requests) if pull_requests else {}
         
         health_score = self.calculate_health_score(
             repo_data, issues_analysis, contributors_analysis, commits_analysis
@@ -256,7 +466,11 @@ class RepositoryHealthAnalyzer:
             },
             'issues_metrics': issues_analysis,
             'contributors_metrics': contributors_analysis,
-            'commits_metrics': commits_analysis
+            'commits_metrics': commits_analysis,
+            'response_metrics': response_analysis,
+            'release_metrics': release_analysis,
+            'documentation_metrics': documentation_analysis,
+            'pr_metrics': pr_analysis
         }
 
 # Example usage function
@@ -265,10 +479,8 @@ def analyze_multiple_repositories(collector, repository_list):
     analyzer = RepositoryHealthAnalyzer()
     results = []
     
-    repo_count = 0
-
     for owner, repo in repository_list:
-        print(f"#{repo_count}: Analyzing {owner}/{repo}...")
+        print(f"Analyzing {owner}/{repo}...")
         
         try:
             # Collect data
@@ -280,7 +492,6 @@ def analyze_multiple_repositories(collector, repository_list):
             # Analyze
             analysis = analyzer.analyze_repository(repo_data, issues, contributors, commits)
             results.append(analysis)
-            repo_count += 1
             
             # Be nice to the API
             time.sleep(1)

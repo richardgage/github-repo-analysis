@@ -132,6 +132,19 @@ def save_results(results, base_filename="github_analysis"):
                 'time_window_days': result['commits_metrics'].get('time_window_days', 180),
                 'core_contributors': result['contributors_metrics'].get('core_contributors', 0),
                 'contribution_gini': result['contributors_metrics'].get('contribution_gini', 0),
+                
+                # New high-priority metrics
+                'avg_response_time_hours': result['response_metrics'].get('avg_response_time_hours', 0),
+                'response_rate': result['response_metrics'].get('response_rate', 0),
+                'total_releases': result['release_metrics'].get('total_releases', 0),
+                'releases_per_month': result['release_metrics'].get('releases_per_month', 0),
+                'days_since_last_release': result['release_metrics'].get('days_since_last_release', 0),
+                'documentation_score': result['documentation_metrics'].get('documentation_score', 0),
+                'has_readme': result['documentation_metrics'].get('has_readme', False),
+                'has_contributing': result['documentation_metrics'].get('has_contributing', False),
+                'has_license': result['documentation_metrics'].get('has_license', False),
+                'pr_acceptance_rate': result['pr_metrics'].get('pr_acceptance_rate', 0),
+                'avg_time_to_merge_days': result['pr_metrics'].get('avg_time_to_merge_days', 0)
             }
             csv_data.append(csv_row)
     
@@ -182,7 +195,7 @@ def main():
     
     # Get repositories to analyze
     repositories = get_sample_repositories()
-    estimated_calls = len(repositories) * 15  # Rough estimate
+    estimated_calls = len(repositories) * 25  # Updated estimate for more API calls
     
     print(f"\n📋 Analysis Plan:")
     print(f"   Repositories to analyze: {len(repositories)}")

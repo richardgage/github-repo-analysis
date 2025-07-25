@@ -125,7 +125,80 @@ class GitHubDataCollector:
             page += 1
             time.sleep(0.5)
         
-        return all_contributors
+    def get_releases_data(self, owner, repo):
+        """Get releases information"""
+        url = f"{self.base_url}/repos/{owner}/{repo}/releases"
+        params = {'per_page': 100}
+        
+        all_releases = []
+        page = 1
+        
+        while page <= 5:  # Limit to recent releases
+            params['page'] = page
+            releases = self.make_request(url, params)
+            
+            if not releases or len(releases) == 0:
+                break
+                
+            all_releases.extend(releases)
+            
+            if len(releases) < 100:
+                break
+            
+            page += 1
+            time.sleep(0.5)
+        
+        return all_releases
+    
+    def get_pull_requests_data(self, owner, repo, state='all', months_back=6):
+        """Get pull requests data"""
+        url = f"{self.base_url}/repos/{owner}/{repo}/pulls"
+        params = {
+            'state': state,
+            'per_page': 100,
+            'sort': 'created',
+            'direction': 'desc'
+        }
+        
+        # Add time filter for recent PRs
+        if months_back:
+            since_date = datetime.now() - timedelta(days=months_back * 30)
+            params['since'] = since_date.isoformat()
+        
+        all_prs = []
+        page = 1
+        
+        while len(all_prs) < 200:  # Reasonable limit for PRs
+            params['page'] = page
+            prs = self.make_request(url, params)
+            
+            if not prs or len(prs) == 0:
+                break
+                
+            all_prs.extend(prs)
+            
+            if len(prs) < 100:
+                break
+            
+            page += 1
+            time.sleep(0.5)
+        
+        return all_prs
+    
+    def get_repository_contents(self, owner, repo, path=''):
+        """Get repository contents to check for documentation files"""
+        url = f"{self.base_url}/repos/{owner}/{repo}/contents/{path}"
+        
+        contents = self.make_request(url)
+        return contents if contents else []
+    
+    def get_issue_comments(self, owner, repo, issue_number):
+        """Get comments for a specific issue"""
+        url = f"{self.base_url}/repos/{owner}/{repo}/issues/{issue_number}/comments"
+        params = {'per_page': 100}
+        
+        comments = self.make_request(url, params)
+        return comments if comments else []
     
     def get_commits_data(self, owner, repo, since_date=None):
         """Get commits data within a specific time window"""

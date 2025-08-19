@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 
-def create_advanced_plots(filepath="github_analysis_200_20250728_124301.csv"):
+def create_advanced_plots(filepath="dataset.csv"):
     """Create advanced plots for deeper analysis."""
     
     # Load data

@@ -35,7 +35,10 @@ def load_and_clean_data(filepath):
     initial_rows = len(df)
     df = df.dropna(subset=['recent_resolution_rate'])
     df = df[df['stars'] > 0]
-    df = df[df['total_contributors'] > 0]
+    if 'recent_contributors' in df.columns:
+        df = df[df['recent_contributors'] > 0]
+    else:
+        df = df[df['total_contributors'] > 0]
     df = df[df['recent_resolution_rate'].between(0, 1)]
     
     print(f"Data loaded: {initial_rows} -> {len(df)} rows after cleaning")
@@ -72,7 +75,11 @@ def prepare_features(df):
     
     # Define numeric features for regression
     numeric_features = [
-        'log_stars', 'total_contributors', 'open_ratio', 'commits_per_day',
+        'log_stars',
+        'recent_contributors',
+        'log_recent_contributors',
+        'recent_contributor_ratio',
+        'open_ratio', 'commits_per_day',
         'avg_comments_per_issue', 'activity_ratio', 'contribution_gini',
         'stars', 'forks', 'open_issues'
     ]
@@ -84,9 +91,13 @@ def prepare_features(df):
     # Create feature matrix
     X = df[available_features].copy()
     y = df['recent_resolution_rate'].copy()
-    
-    # Handle any remaining missing values
-    X = X.fillna(X.median())
+
+    # Replace inf/-inf with NaN, then fill or drop
+    X = X.replace([np.inf, -np.inf], np.nan)
+    # Option 1: Drop rows with NaN (safer for regression)
+    valid_idx = ~X.isnull().any(axis=1)
+    X = X[valid_idx]
+    y = y[valid_idx]
     
     # Add language dummy variables if language column exists
     if 'language' in df.columns:
@@ -563,7 +574,7 @@ def main():
     print("=" * 60)
     
     # Update this path to your CSV file
-    filepath = "github_analysis_200_20250728_124301.csv"
+    filepath = "repos_filtered.csv"
     
     try:
         # Load and clean data
